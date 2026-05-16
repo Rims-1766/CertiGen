@@ -98,10 +98,21 @@ function createDb() {
 
 const db = createDb();
 
-const EMAIL_USER = process.env.EMAIL_USER;
-const EMAIL_PASS = process.env.EMAIL_PASS;
+const EMAIL_USER = (process.env.EMAIL_USER || '').trim();
+const EMAIL_PASS = (process.env.EMAIL_PASS || '').trim();
 const transporter = EMAIL_USER && EMAIL_PASS
-    ? nodemailer.createTransport({ service: 'gmail', auth: { user: EMAIL_USER, pass: EMAIL_PASS } })
+    ? nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+            user: EMAIL_USER,
+            pass: EMAIL_PASS
+        },
+        tls: {
+            rejectUnauthorized: false
+        }
+    })
     : null;
 
 const hashPassword = password => {
