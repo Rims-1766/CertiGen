@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # CertiGen
 
 CertiGen is a Node.js + Express project for bulk certificate generation, ZIP download, email notification, employee/admin dashboards, and QR-based certificate verification.
@@ -53,6 +52,12 @@ CertiGen/
 - PostgreSQL support for free hosted deployment
 - Docker deployment support
 
+## Live Demo
+
+Try the deployed application here:
+
+https://certigen-cr0k.onrender.com
+
 ## Prerequisites
 
 Install these first:
@@ -64,19 +69,19 @@ For free hosted deployment, the app also supports PostgreSQL providers such as N
 
 ## Setup
 
-1. Go to the backend folder:
+### 1. Go to the backend folder:
 
 ```powershell
 cd backend
 ```
 
-2. Install dependencies:
+### 2. Install dependencies:
 
 ```powershell
 npm install
 ```
 
-3. Create the local MySQL database and tables:
+### 3. Create the local MySQL database and tables:
 
 ```sql
 SOURCE certigen.sql;
@@ -86,7 +91,7 @@ If your MySQL client does not support `SOURCE`, open `backend/certigen.sql` and 
 
 The app also creates the required tables automatically when it starts, which is useful for hosted databases.
 
-4. Set environment variables before starting the server.
+### 4. Set environment variables before starting the server
 
 PowerShell example for local MySQL:
 
@@ -100,22 +105,26 @@ $env:DB_USER="root"
 $env:DB_PASSWORD="your_mysql_password"
 $env:EMAIL_USER="your_gmail_address"
 $env:EMAIL_PASS="your_gmail_app_password"
+
 node server.js
 ```
 
-You can leave `EMAIL_USER` and `EMAIL_PASS` empty if you do not want email sending yet.
+You can leave `EMAIL_USER` and `EMAIL_PASS` empty if email functionality is not required.
 
-5. If your database details are already configured and you only want to enable email generation, run from `backend/`:
+### 5. Enable email notifications only
+
+If database details are already configured and you only want email support:
 
 ```powershell
 $env:EMAIL_USER="your_gmail_address"
 $env:EMAIL_PASS="your_gmail_app_password"
+
 node server.js
 ```
 
-Use a Gmail app password for `EMAIL_PASS`, not your normal Gmail password.
+Use a Gmail App Password instead of your normal Gmail password.
 
-6. If you do not have separate admin database details and are using the default local MySQL setup, run from `backend/`:
+### 6. Using default local MySQL setup
 
 ```powershell
 $env:DB_HOST="localhost"
@@ -125,35 +134,41 @@ $env:DB_USER="root"
 $env:DB_PASSWORD="password"
 $env:EMAIL_USER="your_gmail_address"
 $env:EMAIL_PASS="your_gmail_app_password"
+
 node server.js
 ```
 
-These email variables are important for sending certificate generation notifications.
+These email variables are required for certificate email notifications.
 
-7. Open the app:
+### 7. Open the application
 
 ```text
 http://localhost:3000
 ```
 
-Do not use VS Code Live Server as the main app URL unless the backend is also running with `node server.js`.
+Do not use VS Code Live Server as the main application URL unless the backend server is also running with:
+
+```powershell
+node server.js
+```
 
 ## Default Demo Accounts
 
-These accounts are created by `backend/certigen.sql` and by the server during local startup:
+These accounts are available for testing:
 
-- Admin:
-  - Email: `admin@certigen.local`
-  - Password: `admin123`
-- Employee:
-  - Email: `employee@certigen.local`
-  - Password: `employee123`
+### Admin
+- Email: `vkartheek007@gmail.com`
+- Password: `admin@123`
 
-For public deployment, set your own `ADMIN_EMAIL` and `ADMIN_PASSWORD` environment variables.
+### Employee
+- Email: `employee@certigen.local`
+- Password: `employee@123`
+
+For public deployment, configure your own `ADMIN_EMAIL` and `ADMIN_PASSWORD` environment variables.
 
 ## GitHub Notes
 
-These folders and files are intentionally ignored because they are generated locally, contain dependencies, or may contain secrets:
+The following folders and files are intentionally ignored because they contain generated files, dependencies, or private data:
 
 - `backend/node_modules/`
 - `backend/uploads/`
@@ -167,27 +182,39 @@ These folders and files are intentionally ignored because they are generated loc
 - `Information.txt`
 - `*.log`
 
-The folder structure for `backend/uploads/`, `backend/uploaded_templates/`, and `backend/certificates/` is preserved with `.gitkeep` files.
+Folder structures for:
 
-`Information.txt`, `.env`, and `backend/admin.local.json` should never be pushed to GitHub because they may contain private details or secrets.
+- `backend/uploads/`
+- `backend/uploaded_templates/`
+- `backend/certificates/`
+
+are preserved using `.gitkeep` files.
+
+The following should never be pushed to GitHub:
+
+- `Information.txt`
+- `.env`
+- `backend/admin.local.json`
+
+because they may contain private credentials or configuration data.
 
 ## Run Commands
 
-Run these from the `backend/` folder.
+Run these commands from the `backend/` folder.
 
-Start the app:
+Start the application:
 
 ```powershell
 npm start
 ```
 
-Development start command:
+Development mode:
 
 ```powershell
 npm run dev
 ```
 
-Current test command:
+Run tests:
 
 ```powershell
 npm test
@@ -195,13 +222,30 @@ npm test
 
 ## Deployment
 
-This app needs a Node.js server and a database. GitHub Pages can only host static files, so deploy the full app as a Node web service.
+This application requires:
 
-See `DEPLOYMENT.md` for a zero-cost deployment path using Koyeb for the web service and Neon Postgres for the database. `render.yaml` is included as an alternate Render deployment configuration.
+- Node.js server
+- Database service
+
+GitHub Pages can host only static content, so deploy the application as a Node.js web service.
+
+Deployment options included:
+
+- Koyeb + Neon PostgreSQL
+- Render deployment using `render.yaml`
+- Docker deployment
+
+See `DEPLOYMENT.md` for complete deployment steps.
 
 ## Important Note
 
-New passwords are stored as hashes. Existing plain-text passwords still work once and are upgraded to hashes after a successful login.
-=======
-# CertiGen
->>>>>>> 5b0b5f46b8aa370193d2d3c62b58ebe30b4c6210
+- New passwords are stored as hashes.
+- Existing plain-text passwords continue to work once and are automatically upgraded to hashed passwords after successful login.
+- Email notifications require valid Gmail credentials and App Passwords.
+
+
+## Note 
+- If you want to generate the certificates, a demo excel file of the participants is already in frontend folder, use that kindly
+
+
+##                          DEVELOPED BY VENKATA LALITH KARTHEEK VUPPULURI
