@@ -573,7 +573,7 @@ async function sendGenerationMail({ employeeEmail, zipName, zipPath, zipUrl, gen
         });
         return { sent: true, reason: `Email sent to: ${recipients.join(', ')}` };
     } catch {
-        console.warn('Email notification skipped.');
+        console.warn('Email notification skipped. USER:', EMAIL_USER, 'PASS length:', (EMAIL_PASS||'').length);
         return { sent: false, reason: 'Email sending failed. Check EMAIL_USER, EMAIL_PASS, and Gmail app password.' };
     }
 }
