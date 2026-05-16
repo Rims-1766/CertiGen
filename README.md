@@ -242,3 +242,10 @@ See `DEPLOYMENT.md` for complete deployment steps.
 - New passwords are stored as hashes.
 - Existing plain-text passwords continue to work once and are automatically upgraded to hashed passwords after successful login.
 - Email notifications require valid Gmail credentials and App Passwords.
+
+
+## Note 
+- If you want to generate the certificates, a demo excel file of the participants is already in frontend folder, use that kindly
+
+
+                                                                                    DEVELOPED BY VENKATA LALITH KARTHEEK VUPPULURI
