@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # CertiGen
 
 CertiGen is a Node.js + Express project for bulk certificate generation, ZIP download, email notification, employee/admin dashboards, and QR-based certificate verification.
@@ -201,3 +202,6 @@ See `DEPLOYMENT.md` for a zero-cost deployment path using Koyeb for the web serv
 ## Important Note
 
 New passwords are stored as hashes. Existing plain-text passwords still work once and are upgraded to hashes after a successful login.
+=======
+# CertiGen
+>>>>>>> 5b0b5f46b8aa370193d2d3c62b58ebe30b4c6210
