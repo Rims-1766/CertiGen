@@ -248,4 +248,4 @@ See `DEPLOYMENT.md` for complete deployment steps.
 - If you want to generate the certificates, a demo excel file of the participants is already in frontend folder, use that kindly
 
 
-                                                                                    DEVELOPED BY VENKATA LALITH KARTHEEK VUPPULURI
+##                          DEVELOPED BY VENKATA LALITH KARTHEEK VUPPULURI
