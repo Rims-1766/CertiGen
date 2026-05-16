@@ -1,0 +1,33 @@
+✅ Number of modules used: 12
+
+📦 Modules + Why they are used
+express
+	Creates server & APIs
+	Handles routes like /upload-excel, /login
+cors
+	Allows frontend to talk to backend (avoids CORS error)
+fs (File System)
+	Create/delete/read files
+	Used for uploads, PDFs, ZIPs
+os
+	Gets system network details
+	Used to find local IP for QR links
+path
+	Handles file paths safely
+	Joins folders like /uploads, /certificates
+multer
+	Handles file uploads (Excel, templates)
+	xlsx
+	Reads Excel files
+	Converts Excel → JSON data
+mysql2/promise
+	Connects to MySQL database
+	Runs queries (INSERT, SELECT)
+pdfkit
+	Generates certificate PDFs
+qrcode
+	Creates QR codes for verification links
+archiver
+	Creates ZIP file of all certificates
+nodemailer
+	Sends email with ZIP attachment

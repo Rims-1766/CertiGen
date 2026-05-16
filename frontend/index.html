@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certi-Gen Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-redesign">
+    <div class="login-container">
+        <div class="hero-section">
+            <div class="hero-frame">
+                <img
+                    src="image1.jpeg"
+                    alt="GG shield logo with stacked certificates and security elements representing Certi-Gen"
+                    class="hero-img"
+                >
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="glass-card">
+                <div class="logo-icon">
+                    <img src="https://img.icons8.com/fluency/48/verified-badge.png" alt="Certi-Gen logo">
+                </div>
+                <h2>Certi-Gen</h2>
+                <p class="subtitle">Automated Certificate Generation Platform</p>
+
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label for="email">Organization Email</label>
+                        <input id="email" type="email" name="email" placeholder="Enter email" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input id="password" type="password" name="password" placeholder="Enter password" required>
+                    </div>
+
+                    <button id="loginBtn" type="submit" class="signin-btn">Sign in to Dashboard</button>
+                </form>
+
+                <p class="demo-text">Use your employee or admin email and password to login.</p>
+                <div id="status" class="status">Enter your credentials to continue.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const localHostnames = ["localhost", "127.0.0.1", "0.0.0.0"];
+        const isLocalStaticServer = localHostnames.includes(window.location.hostname) && window.location.port && window.location.port !== "3000";
+        const API_BASE = window.location.protocol === "file:" || isLocalStaticServer ? "http://localhost:3000" : "";
+        const LOGIN_URL = `${API_BASE}/login`;
+
+        // Form submit: check the entered email and password.
+        document.getElementById("loginForm").addEventListener("submit", event => {
+            event.preventDefault();
+            login();
+        });
+
+        // This shows a simple login message under the button.
+        function setStatus(message, isError = false) {
+            const status = document.getElementById("status");
+            status.textContent = message;
+            status.className = isError ? "status error" : "status";
+        }
+
+        // This sends the login request and redirects by role.
+        async function login() {
+            try {
+                // storing the inputs of both the email and the password
+                const email = document.getElementById("email").value.trim();
+                const password = document.getElementById("password").value.trim();
+
+                // checking if any of the fields is missing (fields -> email, password)
+                if (!email || !password) {
+                    setStatus("Please enter both email and password.", true);
+                    return;
+                }
+
+                setStatus("Checking your credentials...");
+
+                // posting request to an API (/login) and fetching the response from it 
+                const res = await fetch(LOGIN_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    throw new Error(`Login request failed: ${res.status} ${errorText}`);
+                }
+                const data = await res.json();
+
+                // if the data is not success, the details will be invalid
+                if (!data.success) {
+                    setStatus("Invalid credentials. Please try again.", true);
+                    return;
+                }
+
+                // storing the variables in the local storage
+                localStorage.setItem("employeeEmail", email);
+                localStorage.setItem("employeeRole", data.role || "employee");
+                localStorage.setItem("employeeActiveView", "dashboard");
+
+                // checking if the role is admin or employee and directing the pages to the respective ones
+                if (data.role === "admin") {
+                    window.location.href = "admin.html";
+                } else {
+                    window.location.href = "employee-dashboard.html";
+                }
+            } catch (error) {
+                setStatus(`Server error while calling ${LOGIN_URL}. Open http://localhost:3000 and refresh once.`, true);
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>

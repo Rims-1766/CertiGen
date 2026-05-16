@@ -1,0 +1,17 @@
+node_modules
+backend/node_modules
+.git
+.env
+.env.local
+admin.local.json
+backend/.env
+backend/.env.local
+backend/admin.local.json
+uploads
+uploaded_templates
+certificates
+backend/uploads
+backend/uploaded_templates
+backend/certificates
+*.log
+Information.txt

@@ -1,0 +1,17 @@
+node_modules/
+backend/node_modules/
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/uploaded_templates/*
+!backend/uploaded_templates/.gitkeep
+backend/certificates/*
+!backend/certificates/.gitkeep
+.env
+.env.local
+admin.local.json
+backend/.env
+backend/.env.local
+backend/admin.local.json
+Information.txt
+Thumbs.db
+*.log

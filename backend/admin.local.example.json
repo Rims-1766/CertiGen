@@ -1,0 +1,8 @@
+{
+  "name": "Real Admin",
+  "email": "admin@example.com",
+  "password": "your-admin-login-password",
+  "phone": "9999999999",
+  "organization": "certigen_org",
+  "role": "admin"
+}

@@ -1,0 +1,274 @@
+## Backend Functions
+
+1 normalize value
+convert value to string
+trim spaces
+convert to lowercase
+replace special characters with underscore
+remove extra underscores
+
+2 safeName value
+convert to string
+remove invalid file characters
+replace spaces with underscore
+limit length to 80 characters
+return safe file name
+
+3 getLanIp
+get all network interfaces
+loop through interfaces
+check for IPv4 and not internal
+return IP address
+if not found return null
+
+4 baseUrl req
+check if public base url exists
+get host from request
+if localhost call getLanIp
+if LAN IP found return LAN URL
+else return normal URL
+
+5 formatDate value
+if empty return empty string
+if date object convert to ISO format
+if number convert Excel date to JS date
+else parse string date
+return formatted YYYY MM DD
+
+6 pick row keys
+loop through keys
+check if value exists
+return first valid value
+if none return empty string
+
+7 invalidReason student
+check for missing fields
+if missing return missing fields
+convert score to number
+if invalid return error
+if score less than or equal to 35 return fail
+else return general reason
+
+8 templateList
+read built in templates folder
+filter image files
+map into objects
+read uploaded templates folder
+combine both lists
+mark selected template
+
+9 mapStudents rows
+initialize valid and invalid arrays
+loop through rows
+normalize column names
+extract fields using pick
+format dates
+check required fields and score
+if valid add to valid list
+else add to invalid list with reason
+return students and summary
+
+10 sendGenerationMail
+check email configuration
+fetch admin emails from database
+get employee details
+combine recipients
+format invalid participants list
+send email with summary and ZIP file
+return success or failure
+
+11 drawCertificate doc student verifyUrl
+get page size
+add background template image
+draw design boxes
+add student details text
+draw lines and signature area
+generate QR code
+place QR code in PDF
+
+## Frontend Functions
+
+12 setStatus message isError
+get status element
+set message text
+apply error style if needed
+
+13 login
+get email and password
+validate inputs
+show loading message
+call login API
+convert response to JSON
+if failed show error
+store data in local storage
+redirect based on role
+
+14 setStatus message type
+get status element
+set message
+apply style class
+
+15 addEmployee
+get input values
+validate fields
+show loading message
+call add employee API
+if failed show error
+clear inputs
+show success
+reload employee list
+
+16 loadEmployees
+call employees API
+get data
+clear UI list
+if empty show message
+loop employees and create elements
+append to UI
+
+17 deleteEmployee id
+show confirmation
+if cancelled stop
+call delete API
+if failed show error
+show success
+reload list
+
+## Dashboard Functions
+
+18 showView viewId
+save active view
+remove active class from all views
+add active class to selected view
+highlight selected button
+
+19 logout
+remove data from local storage
+redirect to login page
+
+20 setStatus id type message
+get element
+set class
+set message
+
+21 escapeHtml value
+convert to string
+replace special HTML characters
+prevent HTML injection
+
+22 renderLegend items containerId
+clear container
+if empty show message
+loop items create rows
+set label and value
+apply color
+append to UI
+
+23 renderInvalidParticipants items
+clear container
+if empty show message
+loop items create cards
+display details and reason
+append to UI
+
+24 renderPieChart items
+calculate total
+if zero show empty chart
+loop items calculate angles
+create gradient
+apply background
+
+25 renderCourseBars items
+clear container
+if empty show message
+find max value
+loop items create bars
+set width based on value
+append to UI
+
+26 updateDashboard stats
+store stats
+update all text fields
+format course names
+call chart and list functions
+show download button if exists
+maintain active view
+
+27 loadStats
+call stats API
+convert response
+call updateDashboard
+
+28 loadTemplates
+call templates API
+store templates
+clear UI
+loop templates create cards
+add click events
+append to UI
+
+29 selectTemplate template source
+call select template API
+if failed show error
+show success
+reload templates and stats
+
+30 uploadExcel
+get file
+validate file
+create form data
+send request
+get response
+if failed show error
+show success
+reload stats
+
+31 uploadTemplate
+get file
+validate file
+create form data
+send request
+if failed show error
+show success
+reload templates and stats
+
+32 generateCertificates
+switch to generate view
+show loading message
+call generate API
+if failed show error
+show result message
+show download button
+reload stats
+
+33 downloadZipFile
+get ZIP URL
+fetch file
+convert to blob
+create temporary link
+trigger download
+clean up
+
+## Verification Functions
+
+34 escapeHtml value
+convert to string
+replace special characters
+prevent HTML injection
+
+35 renderItem label value
+create HTML string
+display label and value
+
+36 loadVerification
+get registration number from URL
+call verify API
+if invalid show error UI
+if valid display certificate details
+handle errors
+
+## Summary
+
+total functions 36
+
+used for backend processing frontend UI API calls data handling and security

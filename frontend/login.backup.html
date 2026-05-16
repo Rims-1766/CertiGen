@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | CertiGen</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="login-page">
+    <section class="panel">
+        <h1>CertiGen Login</h1>
+        <p>Sign in with your employee or admin account to manage certificates, templates, and verification records.</p>
+
+        <div class="field">
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="you@example.com">
+        </div>
+
+        <div class="field">
+            <label for="password">Password</label>
+            <input id="password" type="password" placeholder="Enter password">
+        </div>
+
+        <button id="loginBtn">Login</button>
+        <div id="status" class="status">Enter your credentials to continue.</div>
+    </section>
+
+    <script>
+        const localHostnames = ["localhost", "127.0.0.1", "0.0.0.0"];
+        const isLocalStaticServer = localHostnames.includes(window.location.hostname) && window.location.port && window.location.port !== "3000";
+        const API_BASE = window.location.protocol === "file:" || isLocalStaticServer ? "http://localhost:3000" : "";
+
+        // Login button: check the entered email and password.
+        document.getElementById("loginBtn").addEventListener("click", login);
+
+        // This shows a simple login message under the button.
+        function setStatus(message, isError = false) {
+            const status = document.getElementById("status");
+            status.textContent = message;
+            status.className = isError ? "status error" : "status";
+        }
+
+        // This sends the login request and redirects by role.
+        async function login() {
+            try {
+                const email = document.getElementById("email").value.trim();
+                const password = document.getElementById("password").value.trim();
+
+                if (!email || !password) {
+                    setStatus("Please enter both email and password.", true);
+                    return;
+                }
+
+                setStatus("Checking your credentials...");
+
+                const res = await fetch(`${API_BASE}/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+
+                if (!data.success) {
+                    setStatus("Invalid credentials. Please try again.", true);
+                    return;
+                }
+
+                localStorage.setItem("employeeEmail", email);
+                localStorage.setItem("employeeRole", data.role || "employee");
+                localStorage.setItem("employeeActiveView", "dashboard");
+
+                if (data.role === "admin") {
+                    window.location.href = "admin.html";
+                } else {
+                    window.location.href = "employee-dashboard.html";
+                }
+            } catch (error) {
+                setStatus("Server error. Please check whether the backend is running.", true);
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>

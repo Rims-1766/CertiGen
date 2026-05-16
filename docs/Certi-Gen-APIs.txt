@@ -1,0 +1,29 @@
+🔹 List of APIs + Why they are used
+POST /login
+	Used for user authentication (login)
+GET /templates-list
+	Fetch all templates → display in UI
+POST /select-template
+	Save selected template → used for certificate generation
+POST /upload-template
+	Upload new template → custom template support
+POST /upload-excel
+	Upload Excel file → read & validate student data
+POST /generate
+	Generate certificates → main functionality
+GET /download-zip/:zipName
+	Download ZIP → get all certificates
+GET /verify/:reg_no
+	Open verification page → UI for checking certificate
+GET /api/verify/:reg_no
+	Verify certificate → check in database
+GET /stats
+	Get dashboard data → charts & counts
+POST /add-employee
+	Add employee → admin feature
+GET /employees
+	Get employee list → admin panel display
+DELETE /delete-employee/:id
+	Delete employee → admin control
+GET /
+	Redirect to login → default route

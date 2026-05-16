@@ -1,0 +1,6 @@
+Running Command 
+
+cd C:\Users\DELL\Desktop\CertiGen_Updated\CertiGen\backend
+$env:EMAIL_USER="vkartheek007@gmail.com"
+$env:EMAIL_PASS="oevrfoprktjzgelr"
+node server.js

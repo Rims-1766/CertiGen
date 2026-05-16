@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | CertiGen</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="admin-page">
+    <div class="page">
+        <div class="hero">
+            <div>
+                <h1>Admin Panel</h1>
+                <p>Add employee accounts and manage access for the certificate generation team.</p>
+            </div>
+            <button class="logout" id="logoutBtn">Logout</button> 
+        </div>
+
+        <div class="grid">
+            <section class="card">
+                <h2>Add Employee</h2>
+                <div class="form-grid">
+                    
+                    <input id="name" placeholder="Employee name">
+                    <input id="email" type="email" placeholder="Employee email">
+                    <input id="password" type="password" placeholder="Password">
+                    <input id="phone" placeholder="Phone number">
+                    
+                    <button class="primary" id="addBtn">Add Employee</button>
+                    <div id="status" class="status">Fill the details to create a new employee account.</div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Employees</h2>
+                <div id="list" class="employee-list"></div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        const localHostnames = ["localhost", "127.0.0.1", "0.0.0.0"];
+        const isLocalStaticServer = localHostnames.includes(window.location.hostname) && window.location.port && window.location.port !== "3000";
+        const API_BASE = window.location.protocol === "file:" || isLocalStaticServer ? "http://localhost:3000" : "";
+        const role = localStorage.getItem("employeeRole");
+
+        // This stops non-admin users from opening the admin page.
+        if (role !== "admin") {
+            window.location.href = "index.html";
+        }
+
+        // Logout button: clear saved login details and go back to login.
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            // removes the items from the local storage
+            localStorage.removeItem("employeeEmail");
+            localStorage.removeItem("employeeRole");
+            // redirects us to the login page
+            window.location.href = "index.html";
+        });
+
+        // Add button: send the form data to the backend.
+        document.getElementById("addBtn").addEventListener("click", addEmployee);
+
+        // This shows a short message below the form.
+        function setStatus(message, type = "") {
+            const status = document.getElementById("status");
+            status.textContent = message;
+            status.className = `status ${type}`.trim();
+        }
+
+        // This sends the new employee details to the API.
+        async function addEmployee() {
+            try {
+                // all the details will be stored in the variables (name, email, password, phone)
+                const name = document.getElementById("name").value.trim();
+                const email = document.getElementById("email").value.trim();
+                const password = document.getElementById("password").value.trim();
+                const phone = document.getElementById("phone").value.trim();
+
+                // check if any of the fields are missing 
+                if (!name || !email || !password || !phone) {
+                    setStatus("All employee fields are required.", "error");
+                    return;
+                }
+
+                setStatus("Creating employee account...");
+
+                // fetching the response from the "add-employee" API by sending a request
+                const res = await fetch(`${API_BASE}/add-employee`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, email, password, phone })
+                });
+                const data = await res.json();
+
+                // checking if the data is success, orelse we get an error message
+                if (!data.success) {
+                    throw new Error(data.message || "Failed to add employee");
+                }
+
+                // clearing all the input given by the user in the input boxes
+                document.getElementById("name").value = "";
+                document.getElementById("email").value = "";
+                document.getElementById("password").value = "";
+                document.getElementById("phone").value = "";
+                setStatus("Employee added successfully.", "success");
+                await loadEmployees();
+            } catch (error) {
+                setStatus(error.message || "Failed to add employee.", "error");
+                console.error(error);
+            }
+        }
+
+        // This loads all employee accounts and shows them on the page.
+        async function loadEmployees() {
+            try {
+                // API req for (/employees) 
+                const res = await fetch(`${API_BASE}/employees`);
+                const employees = await res.json();
+                // targeting div that shows employee list 
+                const list = document.getElementById("list");
+                list.innerHTML = "";
+
+                // checking for the employee's accounts
+                if (!employees.length) {
+                    list.innerHTML = `<div class="status">No employee accounts found.</div>`;
+                    return;
+                }
+
+                // displaying the employee information 
+                employees.forEach(employee => {
+                    const item = document.createElement("div");
+                    item.className = "employee";
+                    item.innerHTML = `
+                        <div>
+                            <strong>${employee.name || "No name"}</strong>
+                            <p>${employee.email} | ${employee.phone || "No phone"}</p>
+                        </div>
+                        <button>Delete</button>
+                    `;
+
+                    // Delete button: remove this employee from the database.
+                    item.querySelector("button").addEventListener("click", () => deleteEmployee(employee.id));
+                    list.appendChild(item);
+                });
+            } catch (error) {
+                setStatus("Could not load employee list.", "error");
+                console.error(error);
+            }
+        }
+
+        // This calls the delete API after the admin confirms.
+        async function deleteEmployee(id) {
+            // alerting message at the website for confirmation of the deletion of employee from the database
+            if (!confirm("Delete this employee account?")) {
+                return;
+            }
+
+            try {
+                // fetches API (/delete-employee)
+                const res = await fetch(`${API_BASE}/delete-employee/${id}`, { method: "DELETE" });
+                const data = await res.json();
+
+                // if deletion is not done, throws error
+                if (!data.success) {
+                    throw new Error(data.message || "Delete failed");
+                }
+
+                setStatus("Employee deleted successfully.", "success");
+                await loadEmployees();
+            } catch (error) {
+                setStatus(error.message || "Failed to delete employee.", "error");
+                console.error(error);
+            }
+        }
+
+        // This loads the employee list when the page opens.
+        loadEmployees();
+    </script>
+</body>
+</html>

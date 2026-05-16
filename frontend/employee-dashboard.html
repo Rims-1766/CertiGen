@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Dashboard | CertiGen</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dashboard-page">
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <h1>CertiGen</h1>
+                <p>Manage certificate uploads, templates, generation, downloads, and verification from one workspace.</p>
+            </div>
+
+            <nav class="nav">
+                <button type="button" class="nav-btn active" data-view="dashboard">Dashboard</button>
+                <button type="button" class="nav-btn" data-view="upload">Upload Excel</button>
+                <button type="button" class="nav-btn" data-view="templates">Templates</button>
+                <button type="button" class="nav-btn" data-view="generate">Generate Certificates</button>
+            </nav>
+
+            <button type="button" class="logout" id="logoutBtn">Logout</button>
+        </aside>
+
+        <main class="main">
+            <div class="topbar">
+                <div class="headline">
+                    <h2>Employee Dashboard</h2>
+                    <p>Track previous certificate batches, upload candidate sheets, choose a template, and generate verified certificates.</p>
+                </div>
+                <div class="employee-chip" id="employeeChip">Not logged in</div>
+            </div>
+
+            <section id="dashboard" class="view active">
+                <div class="grid">
+                    <article class="card stat">
+                        <h3>Total Certificates Generated</h3>
+                        <div class="value" id="totalCertificates">0</div>
+                        <div class="meta">All generated certificates stored in database records.</div>
+                    </article>
+
+                    <article class="card stat">
+                        <h3>Certificates Not Created</h3>
+                        <div class="value" id="notCreated">0</div>
+                        <div class="meta">Rows skipped because required Excel details were missing.</div>
+                    </article>
+
+                    <article class="card stat">
+                        <h3>Course Types Until Now</h3>
+                        <div class="value" id="courseTypeCount">0</div>
+                        <div class="meta">Distinct course type groups from generated certificates.</div>
+                    </article>
+
+                    <article class="card chart-card">
+                        <h3>Certificate Distribution By Course Type</h3>
+                        <div class="chart-wrap">
+                            <div class="pie" id="pieChart"></div>
+                            <div class="legend" id="courseTypeLegend"></div>
+                        </div>
+                    </article>
+
+                    <article class="card chart-card">
+                        <h3>Top Courses</h3>
+                        <div class="bar-list" id="courseBars"></div>
+                    </article>
+
+                    <article class="card wide">
+                        <h3>Current Upload Snapshot</h3>
+                        <div class="split">
+                            <div>
+                                <p class="mini"><strong>Total uploaded rows:</strong> <span id="uploadTotal">0</span></p>
+                                <p class="mini"><strong>Valid rows:</strong> <span id="uploadValid">0</span></p>
+                                <p class="mini"><strong>Invalid rows:</strong> <span id="uploadInvalid">0</span></p>
+                                <p class="mini"><strong>Selected template:</strong> <span id="selectedTemplateName">template1.jpg</span></p>
+                            </div>
+                            <div>
+                                <p class="mini"><strong>Course names in latest upload:</strong></p>
+                                <div id="uploadCourseNames" class="hint">No uploaded sheet yet.</div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="card wide">
+                        <h3>Participants Whose Certificates Were Not Created</h3>
+                        <p class="hint">This list helps you quickly identify the skipped students from the latest uploaded sheet.</p>
+                        <div id="invalidParticipantsList" class="reject-list">
+                            <div class="empty">No skipped participants in the latest upload.</div>
+                        </div>
+                    </article>
+
+                </div>
+            </section>
+
+            <section id="upload" class="view">
+                <div class="grid">
+                    <article class="card wide form-card">
+                        <div>
+                            <h3>Upload Excel Sheet</h3>
+                            <p class="hint">The sheet should include candidate name, registration number, course name, start date, end date, score, email, and course type. You may also add optional <strong>passing_marks</strong> and <strong>total_marks</strong> columns — when present, each row's own passing mark is used to decide eligibility instead of the default threshold.</p>
+                        </div>
+
+                        <input type="file" id="excelFile" accept=".xlsx,.xls,.csv">
+                        <button type="button" class="primary" id="uploadBtn">Upload Excel Sheet</button>
+                        <div id="uploadStatus" class="status info">No file uploaded yet.</div>
+                    </article>
+
+                </div>
+            </section>
+
+            <section id="templates" class="view">
+                <div class="grid">
+                    <article class="card wide">
+                        <h3>Choose A Certificate Template</h3>
+                        <p class="hint">All 10 existing templates are shown here. Click any preview to select it for the certificate.</p>
+                        <div id="templateList" class="template-grid"></div>
+                    </article>
+
+                    <article class="card wide form-card">
+                        <div>
+                            <h3>Select Your Own Template</h3>
+                            <p class="hint">Upload a custom image template if you want to use your own certificate design.</p>
+                        </div>
+                        <input type="file" id="templateFile" accept=".png,.jpg,.jpeg">
+                        <button type="button" class="secondary" id="uploadTemplateBtn">Upload Custom Template</button>
+                        <div id="templateStatus" class="status info">Built-in templates are ready to use.</div>
+                    </article>
+                </div>
+            </section>
+
+            <section id="generate" class="view">
+                <div class="grid">
+                    <article class="card wide generate-grid">
+                        <div>
+                            <h3>Generate Individual Certificates</h3>
+                            <p class="hint">Each valid row will create one PDF certificate. PDFs will be zipped, and the QR code will point to the verification page.</p>
+                        </div>
+
+                        <div class="split">
+                            <div class="card flat-card">
+                                <h4>Certificate Content</h4>
+                                <div class="mini">
+                                    Certificate Of Completion<br>
+                                    We hereby proudly announce that PARTICIPANT_NAME / STUDENT_NAME<br>
+                                    has successfully completed the course of COURSE_NAME<br>
+                                    Course Type: online/offline<br>
+                                    Start Date<br>
+                                    End Date<br>
+                                    Score Achieved<br>
+                                    Authorized sign<br>
+                                    Reg. no of student<br>
+                                    QR Verification
+                                </div>
+                            </div>
+                            <div class="card flat-card">
+                                <h4>Generation Summary</h4>
+                                <p class="mini"><strong>Valid rows ready:</strong> <span id="readyCount">0</span></p>
+                                <p class="mini"><strong>Rows skipped:</strong> <span id="skipCount">0</span></p>
+                                <p class="mini"><strong>Selected template:</strong> <span id="generateTemplateName">template1.jpg</span></p>
+                                <p class="mini"><strong>Admin notification:</strong> Email will be attempted after successful generation.</p>
+                            </div>
+                        </div>
+
+                        <button type="button" class="primary" id="generateBtn">Generate Certificates</button>
+                        <div id="generateStatus" class="status info">Upload an Excel sheet and choose a template before generating.</div>
+                        <button type="button" id="downloadZipBtn" class="primary hidden">Download ZIP File</button>
+                    </article>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const localHostnames = ["localhost", "127.0.0.1", "0.0.0.0"];
+        const isLocalStaticServer = localHostnames.includes(window.location.hostname) && window.location.port && window.location.port !== "3000";
+        const API_BASE = window.location.protocol === "file:" || isLocalStaticServer ? "http://localhost:3000" : "";
+        const palette = ["#2357ff", "#5db2ff", "#14a77d", "#ff8d57", "#7349ff", "#ff5b7f", "#f0b429", "#13c2c2"];
+        const employeeEmail = localStorage.getItem("employeeEmail");
+
+        // This keeps logged-out users away from the dashboard.
+        if (!employeeEmail) {
+            window.location.href = "index.html";
+        }
+
+        document.getElementById("employeeChip").textContent = employeeEmail || "Not logged in";
+
+        const state = {
+            stats: null,
+            templates: [],
+            activeView: localStorage.getItem("employeeActiveView") || "dashboard"
+        };
+
+        // Sidebar buttons: switch between dashboard sections.
+        document.querySelectorAll(".nav-btn").forEach(button => {
+            button.addEventListener("click", event => {
+                event.preventDefault();
+                showView(button.dataset.view);
+            });
+        });
+
+        // Logout button: clear saved login data.
+        document.getElementById("logoutBtn").addEventListener("click", event => {
+            event.preventDefault();
+            logout();
+        });
+        // Upload button: send the Excel sheet to the server.
+        document.getElementById("uploadBtn").addEventListener("click", event => {
+            event.preventDefault();
+            uploadExcel();
+        });
+        // Upload template button: send a custom template image.
+        document.getElementById("uploadTemplateBtn").addEventListener("click", event => {
+            event.preventDefault();
+            uploadTemplate();
+        });
+        // Generate button: create all certificates and ZIP them.
+        document.getElementById("generateBtn").addEventListener("click", event => {
+            event.preventDefault();
+            generateCertificates();
+        });
+        // Download button: download the ZIP file from the server.
+        document.getElementById("downloadZipBtn").addEventListener("click", event => {
+            event.preventDefault();
+            downloadZipFile();
+        });
+
+        // This shows one section and hides the others.
+        function showView(viewId) {
+            state.activeView = viewId;
+            localStorage.setItem("employeeActiveView", viewId);
+            document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
+            document.querySelectorAll(".nav-btn").forEach(button => button.classList.remove("active"));
+            document.getElementById(viewId).classList.add("active");
+            document.querySelector(`.nav-btn[data-view="${viewId}"]`).classList.add("active");
+        }
+
+        // This logs the employee out and clears saved page state.
+        function logout() {
+            localStorage.removeItem("employeeEmail");
+            localStorage.removeItem("employeeRole");
+            localStorage.removeItem("employeeActiveView");
+            window.location.href = "index.html";
+        }
+
+        // This updates status boxes like upload, template, and generate messages.
+        function setStatus(id, type, message) {
+            const element = document.getElementById(id);
+            element.className = `status ${type}`;
+            element.textContent = message;
+        }
+
+        // This keeps uploaded student text safe before adding it to the page.
+        function escapeHtml(value) {
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+
+        // This draws the text legend used beside the pie chart.
+        function renderLegend(items, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = "";
+
+            if (!items.length) {
+                container.innerHTML = `<div class="empty">No chart data available yet.</div>`;
+                return;
+            }
+
+            items.forEach((item, index) => {
+                const row = document.createElement("div");
+                row.className = "legend-item";
+                row.innerHTML = `
+                    <div><span class="swatch"></span>${item.label}</div>
+                    <strong>${item.value}</strong>
+                `;
+                row.querySelector(".swatch").style.background = palette[index % palette.length];
+                container.appendChild(row);
+            });
+        }
+
+        // This shows the skipped participant details from the latest upload.
+        function renderInvalidParticipants(items) {
+            const container = document.getElementById("invalidParticipantsList");
+            container.innerHTML = "";
+
+            if (!items.length) {
+                container.innerHTML = `<div class="empty">No skipped participants in the latest upload.</div>`;
+                return;
+            }
+
+            items.forEach(item => {
+                const card = document.createElement("div");
+                card.className = "reject-item";
+
+                // Build the score line — show passing/total marks when the Excel sheet included them.
+                let scoreLine = `Score: ${escapeHtml(item.score)}`;
+                if (item.passing_marks) {
+                    scoreLine += ` | Passing Mark: ${escapeHtml(item.passing_marks)}`;
+                    if (item.total_marks) {
+                        scoreLine += ` / ${escapeHtml(item.total_marks)}`;
+                    }
+                }
+
+                card.innerHTML = `
+                    <div>
+                        <strong>${escapeHtml(item.name)}</strong>
+                        <div class="mini">Row ${escapeHtml(String(item.rowNumber))} | Reg No: ${escapeHtml(item.reg_no)}</div>
+                        <div class="mini">Course: ${escapeHtml(item.course_name)}</div>
+                        <div class="mini">Email: ${escapeHtml(item.email)} | ${scoreLine}</div>
+                    </div>
+                    <div class="mini"><strong>Reason:</strong> ${escapeHtml(item.reason)}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // This turns course type numbers into a simple pie chart.
+        function renderPieChart(items) {
+            const total = items.reduce((sum, item) => sum + item.value, 0);
+            const pie = document.getElementById("pieChart");
+
+            if (!total) {
+                pie.style.background = "conic-gradient(#dde3f5 0deg 360deg)";
+                return;
+            }
+
+            let currentAngle = 0;
+            const segments = items.map((item, index) => {
+                const slice = (item.value / total) * 360;
+                const start = currentAngle;
+                const end = currentAngle + slice;
+                currentAngle = end;
+                return `${palette[index % palette.length]} ${start}deg ${end}deg`;
+            });
+
+            pie.style.background = `conic-gradient(${segments.join(", ")})`;
+        }
+
+        // This shows the top courses as horizontal bars.
+        function renderCourseBars(items) {
+            const container = document.getElementById("courseBars");
+            container.innerHTML = "";
+
+            if (!items.length) {
+                container.innerHTML = `<div class="empty">No course history found yet.</div>`;
+                return;
+            }
+
+            const max = Math.max(...items.map(item => item.value), 1);
+
+            items.slice(0, 8).forEach(item => {
+                const row = document.createElement("div");
+                row.className = "bar-row";
+                row.innerHTML = `
+                    <div class="row-between">
+                        <span>${item.label}</span>
+                        <strong>${item.value}</strong>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill"></div>
+                    </div>
+                `;
+                row.querySelector(".bar-fill").style.width = `${(item.value / max) * 100}%`;
+                container.appendChild(row);
+            });
+        }
+
+        // This fills all dashboard cards with the latest server data.
+        function updateDashboard(stats) {
+            state.stats = stats;
+            document.getElementById("totalCertificates").textContent = stats.totalCertificatesGenerated || 0;
+            document.getElementById("notCreated").textContent = stats.totalCandidatesNotCreated || 0;
+            document.getElementById("courseTypeCount").textContent = (stats.courseTypes || []).length;
+            document.getElementById("uploadTotal").textContent = stats.currentUpload?.totalRows || 0;
+            document.getElementById("uploadValid").textContent = stats.currentUpload?.validRows || 0;
+            document.getElementById("uploadInvalid").textContent = stats.currentUpload?.invalidRows || 0;
+            document.getElementById("selectedTemplateName").textContent = stats.selectedTemplate?.name || "No template selected";
+            document.getElementById("generateTemplateName").textContent = stats.selectedTemplate?.name || "No template selected";
+            document.getElementById("readyCount").textContent = stats.currentUpload?.validRows || 0;
+            document.getElementById("skipCount").textContent = stats.currentUpload?.invalidRows || 0;
+
+            const courseNames = stats.currentUpload?.courseNames?.length
+                ? stats.currentUpload.courseNames.join(", ")
+                : "No uploaded sheet yet.";
+            document.getElementById("uploadCourseNames").textContent = courseNames;
+
+            renderPieChart(stats.courseTypes || []);
+            renderLegend(stats.courseTypes || [], "courseTypeLegend");
+            renderCourseBars(stats.courseNames || []);
+            renderInvalidParticipants(stats.currentUpload?.invalidParticipants || []);
+
+            if (stats.latestGeneration?.zipUrl) {
+                const button = document.getElementById("downloadZipBtn");
+                button.dataset.url = `${API_BASE}${stats.latestGeneration.zipUrl}`;
+                button.classList.remove("hidden");
+            }
+
+            if (state.activeView) {
+                showView(state.activeView);
+            }
+        }
+
+        // This gets dashboard numbers and chart data from the API.
+        async function loadStats() {
+            try {
+                const res = await fetch(`${API_BASE}/stats`);
+                const data = await res.json();
+                updateDashboard(data);
+            } catch (error) {
+                setStatus("generateStatus", "error", "Could not load dashboard statistics from the server.");
+                console.error(error);
+            }
+        }
+
+        // This loads built-in and uploaded templates for selection.
+        async function loadTemplates() {
+            try {
+                const res = await fetch(`${API_BASE}/templates-list`);
+                const templates = await res.json();
+                state.templates = templates;
+
+                const container = document.getElementById("templateList");
+                container.innerHTML = "";
+
+                templates.forEach(template => {
+                    const card = document.createElement("div");
+                    card.className = `card template-item ${template.selected ? "selected" : ""}`;
+                    card.innerHTML = `
+                        <img src="${API_BASE}${template.url}" alt="${template.name}">
+                        <div class="row-between row-center">
+                            <div>
+                                <strong>${template.source === "uploaded" ? "Custom" : "Built-in"}</strong>
+                                <div class="mini">${template.name}</div>
+                            </div>
+                            <button class="secondary">Select</button>
+                        </div>
+                    `;
+
+                    // These let the user select a template from the button or image.
+                    card.querySelector("button").addEventListener("click", () => selectTemplate(template.name, template.source));
+                    card.querySelector("img").addEventListener("click", () => selectTemplate(template.name, template.source));
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                setStatus("templateStatus", "error", "Could not load certificate templates.");
+                console.error(error);
+            }
+        }
+
+        // This tells the server which template should be used next.
+        async function selectTemplate(template, source) {
+            try {
+                const res = await fetch(`${API_BASE}/select-template`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ template, source })
+                });
+                const data = await res.json();
+
+                if (!data.success) {
+                    throw new Error(data.message || "Template selection failed");
+                }
+
+                setStatus("templateStatus", "success", `${template} selected for certificate generation.`);
+                await Promise.all([loadTemplates(), loadStats()]);
+            } catch (error) {
+                setStatus("templateStatus", "error", error.message || "Template selection failed.");
+            }
+        }
+
+        // This uploads the Excel file and checks which rows are valid.
+        async function uploadExcel() {
+            const file = document.getElementById("excelFile").files[0];
+            if (!file) {
+                setStatus("uploadStatus", "error", "Choose an Excel sheet before uploading.");
+                return;
+            }
+
+            try {
+                setStatus("uploadStatus", "info", "Uploading and validating your Excel sheet...");
+                const formData = new FormData();
+                formData.append("file", file);
+
+                const res = await fetch(`${API_BASE}/upload-excel`, {
+                    method: "POST",
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (!data.success) {
+                    throw new Error(data.message || "Excel upload failed");
+                }
+
+                setStatus(
+                    "uploadStatus",
+                    "success",
+                    `Upload complete. Total rows: ${data.total}, valid rows: ${data.valid}, invalid rows: ${data.invalid}.`
+                );
+
+                await loadStats();
+            } catch (error) {
+                setStatus("uploadStatus", "error", error.message || "Excel upload failed.");
+                console.error(error);
+            }
+        }
+
+        // This uploads a custom certificate template image.
+        async function uploadTemplate() {
+            const file = document.getElementById("templateFile").files[0];
+            if (!file) {
+                setStatus("templateStatus", "error", "Choose a template image before uploading.");
+                return;
+            }
+
+            try {
+                setStatus("templateStatus", "info", "Uploading custom template...");
+                const formData = new FormData();
+                formData.append("template", file);
+
+                const res = await fetch(`${API_BASE}/upload-template`, {
+                    method: "POST",
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (!data.success) {
+                    throw new Error(data.message || "Template upload failed");
+                }
+
+                setStatus("templateStatus", "success", "Custom template uploaded and selected successfully.");
+                document.getElementById("templateFile").value = "";
+                await Promise.all([loadTemplates(), loadStats()]);
+            } catch (error) {
+                setStatus("templateStatus", "error", error.message || "Template upload failed.");
+                console.error(error);
+            }
+        }
+
+        // This asks the server to generate all certificate PDFs and the ZIP file.
+        async function generateCertificates() {
+            try {
+                showView("generate");
+                setStatus("generateStatus", "info", "Generating certificates and creating ZIP file...");
+                const res = await fetch(`${API_BASE}/generate`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ employeeEmail })
+                });
+                const data = await res.json();
+
+                if (!data.success) {
+                    throw new Error(data.message || "Certificate generation failed");
+                }
+
+                const emailMessage = data.emailMessage || "Email status unavailable.";
+                setStatus(
+                    "generateStatus",
+                    "success",
+                    `${data.generatedCount} certificates generated. ${data.failedCount} rows were skipped. ${data.emailSent ? "Admin email sent." : `Admin email not sent. ${emailMessage}`}`
+                );
+
+                const downloadButton = document.getElementById("downloadZipBtn");
+                downloadButton.dataset.url = `${API_BASE}${data.zipUrl}`;
+                downloadButton.classList.remove("hidden");
+
+                await loadStats();
+                showView("generate");
+            } catch (error) {
+                setStatus("generateStatus", "error", error.message || "Certificate generation failed.");
+                console.error(error);
+            }
+        }
+
+        // This downloads the ZIP file after generation is complete.
+        async function downloadZipFile() {
+            const downloadButton = document.getElementById("downloadZipBtn");
+            const url = downloadButton.dataset.url;
+
+            if (!url) {
+                setStatus("generateStatus", "error", "No ZIP file is ready to download yet.");
+                return;
+            }
+
+            try {
+                setStatus("generateStatus", "info", "Preparing ZIP download...");
+                const res = await fetch(url);
+
+                if (!res.ok) {
+                    throw new Error("ZIP download failed");
+                }
+
+                const blob = await res.blob();
+                const tempUrl = window.URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = tempUrl;
+                link.download = "certificates.zip";
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                window.URL.revokeObjectURL(tempUrl);
+                setStatus("generateStatus", "success", "ZIP file downloaded successfully.");
+            } catch (error) {
+                setStatus("generateStatus", "error", error.message || "ZIP download failed.");
+                console.error(error);
+            }
+        }
+
+        // This loads the first dashboard data when the page opens.
+        Promise.all([loadStats(), loadTemplates()]).then(() => showView(state.activeView));
+    </script>
+</body>
+</html>
